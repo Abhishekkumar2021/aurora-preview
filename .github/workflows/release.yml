@@ -44,7 +44,9 @@ jobs:
         run: npx ovsx publish aurora-preview.vsix --pat "$OVSX_PAT"
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
+        # Pinned to an immutable commit SHA (v2) — this job holds VSCE_PAT, so a
+        # mutable third-party tag must not be trusted.
+        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2
         with:
           files: aurora-preview.vsix
           generate_release_notes: true
