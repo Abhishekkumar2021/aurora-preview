@@ -11,6 +11,13 @@
   })();
   const post = (msg: unknown) => vscodeApi?.postMessage(msg);
 
+  const ICON_COPY =
+    '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+  const ICON_CHECK =
+    '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+  const ICON_CLOSE =
+    '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+
   let html = $state('');
   let suppressScrollReportUntil = 0;
   let currentScheme: 'light' | 'dark' = 'dark';
@@ -55,16 +62,54 @@
       }
       const btn = document.createElement('button');
       btn.type = 'button';
-      btn.className = 'code-copy';
-      btn.textContent = 'Copy';
+      btn.className = 'icon-btn code-copy';
+      btn.title = 'Copy';
+      btn.setAttribute('aria-label', 'Copy code');
+      btn.innerHTML = ICON_COPY;
       btn.addEventListener('click', () => {
         void navigator.clipboard?.writeText(code?.textContent ?? '');
-        btn.textContent = 'Copied';
-        setTimeout(() => (btn.textContent = 'Copy'), 1200);
+        btn.innerHTML = ICON_CHECK;
+        btn.classList.add('copied');
+        btn.title = 'Copied';
+        setTimeout(() => {
+          btn.innerHTML = ICON_COPY;
+          btn.classList.remove('copied');
+          btn.title = 'Copy';
+        }, 1200);
       });
       bar.appendChild(btn);
       pre.appendChild(bar);
     }
+  }
+
+  // Full-screen image viewer (lightbox).
+  let lightbox: HTMLDivElement | null = null;
+  function ensureLightbox(): HTMLDivElement {
+    if (lightbox) return lightbox;
+    const lb = document.createElement('div');
+    lb.className = 'lightbox';
+    const img = document.createElement('img');
+    img.alt = '';
+    const close = document.createElement('button');
+    close.type = 'button';
+    close.className = 'icon-btn lightbox-close';
+    close.setAttribute('aria-label', 'Close');
+    close.innerHTML = ICON_CLOSE;
+    lb.append(img, close);
+    lb.addEventListener('click', () => closeLightbox());
+    document.body.appendChild(lb);
+    lightbox = lb;
+    return lb;
+  }
+  function openLightbox(src: string, alt: string) {
+    const lb = ensureLightbox();
+    const img = lb.querySelector('img')!;
+    img.src = src;
+    img.alt = alt;
+    lb.classList.add('open');
+  }
+  function closeLightbox() {
+    lightbox?.classList.remove('open');
   }
 
   async function renderMermaid() {
@@ -141,11 +186,24 @@
     };
     window.addEventListener('scroll', onScroll, { passive: true });
 
+    // Click a content image to open it full-screen.
+    const onClick = (e: MouseEvent) => {
+      const t = e.target as HTMLElement;
+      if (t?.tagName === 'IMG' && t.closest('.doc')) {
+        openLightbox((t as HTMLImageElement).currentSrc || (t as HTMLImageElement).src, t.getAttribute('alt') ?? '');
+      }
+    };
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') closeLightbox(); };
+    document.addEventListener('click', onClick);
+    document.addEventListener('keydown', onKey);
+
     post({ type: 'ready' });
 
     return () => {
       window.removeEventListener('message', onMsg);
       window.removeEventListener('scroll', onScroll);
+      document.removeEventListener('click', onClick);
+      document.removeEventListener('keydown', onKey);
     };
   });
 </script>
