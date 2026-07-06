@@ -254,13 +254,26 @@ body {
 
 /* ---- media --------------------------------------------------------------- */
 .doc img { max-width: 100%; border-radius: var(--radius); cursor: zoom-in; }
-.doc pre.mermaid { cursor: zoom-in; }
-/* Mermaid renders HTML labels; stop document typography from leaking into them. */
-.doc .mermaid p { margin: 0; padding: 0; }
-.doc .mermaid .nodeLabel, .doc .mermaid .edgeLabel, .doc .mermaid .label, .doc .mermaid span {
+/* Mermaid: render the diagram on the page surface (NOT as a code panel), so its
+   edge labels — which use the page background — blend cleanly, inline and
+   full-screen. Otherwise pre.mermaid inherits the code-block --code-bg and the
+   --bg labels look like dark boxes on it. */
+.doc pre.mermaid {
+  background: none;
+  border: 0;
+  padding: 0;
+  overflow: visible;
+  cursor: zoom-in;
+  text-align: center;
+}
+/* Stop document typography from leaking into Mermaid's HTML labels (inline + lightbox). */
+.doc .mermaid p, .lightbox-content p { margin: 0; padding: 0; }
+.doc .mermaid .nodeLabel, .doc .mermaid .edgeLabel, .doc .mermaid .label,
+.lightbox-content .nodeLabel, .lightbox-content .edgeLabel, .lightbox-content .label {
   line-height: 1.4;
 }
-.doc .mermaid .edgeLabel, .doc .mermaid .edgeLabel p {
+.doc .mermaid .edgeLabel, .doc .mermaid .edgeLabel p,
+.lightbox-content .edgeLabel, .lightbox-content .edgeLabel p {
   background: var(--bg);
   color: var(--fg);
 }
