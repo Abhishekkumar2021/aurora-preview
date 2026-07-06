@@ -249,6 +249,35 @@
     post({ type: 'revealLine', line });
   }
 
+  const EXPORT_VARS = [
+    '--bg', '--fg', '--muted', '--link', '--link-hover', '--border', '--code-bg', '--quote-bg',
+    '--accent', '--font', '--code-font', '--font-size', '--line-height', '--content-width',
+    '--radius', '--radius-sm',
+    '--hl-comment', '--hl-keyword', '--hl-string', '--hl-number', '--hl-func', '--hl-type',
+    '--hl-var', '--hl-symbol', '--hl-add', '--hl-del',
+  ];
+
+  /** Snapshot the rendered document + resolved theme tokens for a self-contained HTML export. */
+  function gatherExportHtml() {
+    const root = document.documentElement;
+    const cs = getComputedStyle(root);
+    const vars: Record<string, string> = {};
+    for (const name of EXPORT_VARS) {
+      const v = cs.getPropertyValue(name).trim();
+      if (v) vars[name] = v;
+    }
+    const doc = document.querySelector('.doc');
+    const title = (document.querySelector('.fm-title, .doc h1')?.textContent || 'Aurora Preview').trim();
+    post({
+      type: 'exportHtml',
+      title,
+      docHtml: doc ? doc.outerHTML : '',
+      vars,
+      theme: root.dataset.theme ?? 'auto',
+      scheme: root.dataset.scheme ?? 'dark',
+    });
+  }
+
   async function applyMessage(data: unknown) {
     if (!isHostToWebview(data)) return;
     if (data.type === 'render') {
@@ -260,6 +289,9 @@
       applyConfig(data.config);
     } else if (data.type === 'scrollToLine') {
       scrollToLine(data.line);
+    } else if (data.type === 'export') {
+      if (data.format === 'html') gatherExportHtml();
+      else window.print();
     }
   }
 

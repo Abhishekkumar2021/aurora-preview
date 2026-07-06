@@ -39,6 +39,16 @@
         "title": "Open Preview to the Side",
         "category": "Aurora",
         "icon": "$(open-preview)"
+      },
+      {
+        "command": "auroraPreview.exportHtml",
+        "title": "Export to HTML",
+        "category": "Aurora"
+      },
+      {
+        "command": "auroraPreview.exportPdf",
+        "title": "Export to PDF (Print)",
+        "category": "Aurora"
       }
     ],
     "menus": {

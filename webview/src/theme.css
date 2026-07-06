@@ -432,3 +432,14 @@ body {
   .doc { animation: none; }
   * { transition: none !important; }
 }
+
+/* Print (Export to PDF via the print dialog): keep colors, drop UI chrome,
+   avoid awkward page breaks, use the full page width. */
+@media print {
+  html, body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .doc { max-width: none; margin: 0; padding: 0; animation: none; }
+  .code-bar, .lightbox { display: none !important; }
+  .doc pre, .doc table, .doc blockquote, .doc .markdown-alert,
+  .doc img, .doc .mermaid { break-inside: avoid; }
+  .doc h1, .doc h2, .doc h3 { break-after: avoid; }
+}

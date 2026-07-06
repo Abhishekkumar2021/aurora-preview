@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { createRenderer } from './renderer';
-import { isWebviewToHost, type HostToWebview, type PreviewConfig } from '../messaging';
+import { buildStandaloneHtml } from '../export/html';
+import { isWebviewToHost, type HostToWebview, type PreviewConfig, type WebviewToHost } from '../messaging';
 
 function nonce(): string {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -37,6 +38,10 @@ export class PreviewPanel {
 
   /** Scroll-sync loop guard (timestamp in ms). */
   private lockEditorScrollUntil = 0;
+
+  static get active(): PreviewPanel | undefined {
+    return PreviewPanel.current;
+  }
 
   static createOrShow(context: vscode.ExtensionContext, editor: vscode.TextEditor): PreviewPanel {
     if (PreviewPanel.current) {
@@ -100,7 +105,46 @@ export class PreviewPanel {
       if (this.pendingRender) { void this.panel.webview.postMessage(this.pendingRender); this.pendingRender = undefined; }
     } else if (msg.type === 'revealLine') {
       this.syncPreviewToEditor(msg.line);
+    } else if (msg.type === 'exportHtml') {
+      void this.writeHtmlExport(msg);
     }
+  }
+
+  /** Trigger an export in the webview (HTML round-trips back; PDF prints in place). */
+  requestExport(format: 'html' | 'pdf') {
+    this.post({ type: 'export', format });
+  }
+
+  private async writeHtmlExport(msg: Extract<WebviewToHost, { type: 'exportHtml' }>) {
+    const cssUri = vscode.Uri.joinPath(this.context.extensionUri, 'media', 'webview.css');
+    let css = '';
+    try {
+      css = new TextDecoder().decode(await vscode.workspace.fs.readFile(cssUri));
+      css = await this.inlineFontAssets(css);
+    } catch {
+      /* stylesheet missing — export still works, just unstyled */
+    }
+    const html = buildStandaloneHtml({
+      title: msg.title,
+      docHtml: msg.docHtml,
+      css,
+      vars: msg.vars,
+      dataTheme: msg.theme,
+      dataScheme: msg.scheme,
+    });
+    const base = this.doc.uri.path.replace(/\.[^/.]+$/, '') + '.html';
+    const target = await vscode.window.showSaveDialog({
+      defaultUri: this.doc.uri.with({ path: base }),
+      filters: { 'HTML document': ['html'] },
+    });
+    if (!target) return;
+    await vscode.workspace.fs.writeFile(target, new TextEncoder().encode(html));
+    const open = 'Open';
+    const choice = await vscode.window.showInformationMessage(
+      `Exported ${target.path.split('/').pop()}`,
+      open
+    );
+    if (choice === open) void vscode.env.openExternal(target);
   }
 
   private scheduleRender() {
@@ -141,6 +185,27 @@ export class PreviewPanel {
     const target = Math.max(0, Math.min(line, this.doc.lineCount - 1));
     const pos = new vscode.Position(target, 0);
     editor.revealRange(new vscode.Range(pos, pos), vscode.TextEditorRevealType.AtTop);
+  }
+
+  /** Inline `url(assets/*.woff2)` font references as base64 data URIs for a self-contained export. */
+  private async inlineFontAssets(css: string): Promise<string> {
+    const seen = new Set<string>();
+    for (const m of css.matchAll(/url\((?:\.?\/)?(assets\/[^)"']+\.woff2?)\)/g)) {
+      const rel = m[1];
+      if (seen.has(rel)) continue;
+      seen.add(rel);
+      try {
+        const bytes = await vscode.workspace.fs.readFile(
+          vscode.Uri.joinPath(this.context.extensionUri, 'media', rel)
+        );
+        const b64 = Buffer.from(bytes).toString('base64');
+        const mime = rel.endsWith('.woff2') ? 'font/woff2' : 'font/woff';
+        css = css.split(m[0]).join(`url(data:${mime};base64,${b64})`);
+      } catch {
+        /* asset missing — leave the reference as-is */
+      }
+    }
+    return css;
   }
 
   private htmlShell(): string {
