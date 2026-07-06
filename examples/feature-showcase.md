@@ -33,13 +33,28 @@ Typographer niceties: "curly quotes", en–dash, em—dash, and ellipsis…
 
 [^1]: This is the footnote text, rendered at the bottom of the document.
 
-## 3. Blockquotes
+## 3. Blockquotes & callouts
 
 > A single-level blockquote.
 >
 > > A nested blockquote inside it.
->
-> — with a closing line.
+
+GitHub-style alert callouts:
+
+> [!NOTE]
+> Useful information users should know, even when skimming.
+
+> [!TIP]
+> Helpful advice for doing things better or more easily.
+
+> [!IMPORTANT]
+> Key information users need to know to achieve their goal.
+
+> [!WARNING]
+> Urgent info that needs immediate attention to avoid problems.
+
+> [!CAUTION]
+> Advises about risks or negative outcomes of certain actions.
 
 ## 4. Lists
 

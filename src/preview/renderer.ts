@@ -5,6 +5,7 @@ import footnote from 'markdown-it-footnote';
 import attrs from 'markdown-it-attrs';
 import texmath from 'markdown-it-texmath';
 import frontMatter from 'markdown-it-front-matter';
+import githubAlerts from 'markdown-it-github-alerts';
 import katex from 'katex';
 import hljs from 'highlight.js';
 
@@ -95,6 +96,7 @@ export function createRenderer(): MarkdownRenderer {
   md.use(taskLists, { enabled: true });
   md.use(footnote);
   md.use(attrs);
+  md.use(githubAlerts);
   md.use(texmath, {
     engine: katex,
     delimiters: 'dollars',

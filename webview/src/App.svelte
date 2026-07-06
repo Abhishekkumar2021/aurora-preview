@@ -40,6 +40,7 @@
     setVar('--md-font-size', cfg.fontSize ? `${cfg.fontSize}px` : undefined);
     setVar('--md-line-height', cfg.lineHeight ? String(cfg.lineHeight) : undefined);
     setVar('--md-content-width', cfg.contentWidth ? `${cfg.contentWidth}px` : undefined);
+    void reapplyMermaid();
   }
 
   /** Add a language badge + copy button to each highlighted code block. */
@@ -124,22 +125,97 @@
     lightbox?.classList.remove('open');
   }
 
+  /** Normalize any computed color (incl. `color(srgb …)`) to rgb()/rgba(). */
+  function toRgb(c: string): string {
+    const m = c.match(/^color\(srgb\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)(?:\s*\/\s*([\d.]+))?\)/);
+    if (!m) return c;
+    const r = Math.round(+m[1] * 255), g = Math.round(+m[2] * 255), b = Math.round(+m[3] * 255);
+    return m[4] != null ? `rgba(${r}, ${g}, ${b}, ${m[4]})` : `rgb(${r}, ${g}, ${b})`;
+  }
+
+  /** Resolve a CSS color expression (incl. var()/color-mix) to a concrete rgb() value. */
+  function readColor(expr: string): string {
+    const probe = document.createElement('span');
+    probe.style.cssText = `display:none;color:${expr}`;
+    document.body.appendChild(probe);
+    const c = getComputedStyle(probe).color;
+    probe.remove();
+    return toRgb(c);
+  }
+
+  /** Theme Mermaid from the active Aurora tokens (accent-driven, theme-aware). */
+  function initMermaidTheme() {
+    const fg = readColor('var(--fg)');
+    const bg = readColor('var(--bg)');
+    const muted = readColor('var(--muted)');
+    const fill = readColor('color-mix(in srgb, var(--accent) 16%, var(--bg))');
+    const fill2 = readColor('color-mix(in srgb, var(--accent) 9%, var(--bg))');
+    const border = readColor('color-mix(in srgb, var(--accent) 55%, var(--bg))');
+    mermaidMod.initialize({
+      startOnLoad: false,
+      securityLevel: 'strict',
+      theme: 'base',
+      fontFamily: getComputedStyle(document.body).fontFamily,
+      flowchart: { curve: 'basis', htmlLabels: true, padding: 14 },
+      themeVariables: {
+        darkMode: currentScheme === 'dark',
+        background: bg,
+        primaryColor: fill,
+        mainBkg: fill,
+        primaryBorderColor: border,
+        nodeBorder: border,
+        primaryTextColor: fg,
+        textColor: fg,
+        secondaryColor: fill2,
+        tertiaryColor: fill2,
+        secondaryBorderColor: border,
+        tertiaryBorderColor: border,
+        lineColor: muted,
+        edgeLabelBackground: bg,
+        clusterBkg: fill2,
+        clusterBorder: border,
+        noteBkgColor: fill2,
+        noteBorderColor: border,
+        noteTextColor: fg,
+        actorBkg: fill,
+        actorBorder: border,
+        actorTextColor: fg,
+        signalColor: muted,
+        signalTextColor: fg,
+        labelBoxBkgColor: fill,
+        labelBoxBorderColor: border,
+        labelTextColor: fg,
+        activationBkgColor: fill2,
+      },
+    });
+  }
+
   async function renderMermaid() {
     const nodes = Array.from(
       document.querySelectorAll<HTMLElement>('pre.mermaid:not([data-processed])')
     );
     if (nodes.length === 0) return;
     if (!mermaidMod) mermaidMod = (await import('mermaid')).default;
-    mermaidMod.initialize({
-      startOnLoad: false,
-      securityLevel: 'strict',
-      theme: currentScheme === 'light' ? 'default' : 'dark',
-    });
+    for (const n of nodes) if (n.dataset.src == null) n.dataset.src = n.textContent ?? '';
     try {
+      initMermaidTheme();
       await mermaidMod.run({ nodes });
     } catch {
-      /* invalid diagram source — leave the code block as-is */
+      /* invalid diagram source or theme — leave the code block as-is */
     }
+  }
+
+  /** Re-render existing diagrams (e.g. after a theme/accent change) from saved source. */
+  async function reapplyMermaid() {
+    const done = Array.from(document.querySelectorAll<HTMLElement>('pre.mermaid[data-processed]'));
+    if (done.length === 0) return;
+    for (const n of done) {
+      if (n.dataset.src != null) {
+        n.textContent = n.dataset.src;
+        n.removeAttribute('data-processed');
+      }
+    }
+    await renderMermaid();
   }
 
   function nearestElementForLine(line: number): HTMLElement | null {
