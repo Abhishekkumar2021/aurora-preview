@@ -147,7 +147,7 @@ body {
   transition: color 0.14s var(--ease), border-color 0.14s var(--ease), background 0.14s var(--ease);
 }
 .icon-btn:hover { color: var(--fg); border-color: color-mix(in srgb, var(--fg) 30%, transparent); }
-.doc .code-copy.copied { color: var(--accent); border-color: var(--accent); }
+.doc .code-copy.copied { color: var(--accent); }
 
 /* ---- blockquotes / callouts --------------------------------------------- */
 .doc blockquote {
