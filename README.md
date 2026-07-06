@@ -1,5 +1,11 @@
 # Aurora Preview — Markdown Preview, PDF Export & Mermaid
 
+[![Version](https://img.shields.io/visual-studio-marketplace/v/abhishekkumar2021.aurora-preview?label=Marketplace&color=4cd7b0)](https://marketplace.visualstudio.com/items?itemName=abhishekkumar2021.aurora-preview)
+[![Installs](https://img.shields.io/visual-studio-marketplace/i/abhishekkumar2021.aurora-preview?color=4cd7b0)](https://marketplace.visualstudio.com/items?itemName=abhishekkumar2021.aurora-preview)
+[![Rating](https://img.shields.io/visual-studio-marketplace/r/abhishekkumar2021.aurora-preview?color=4cd7b0)](https://marketplace.visualstudio.com/items?itemName=abhishekkumar2021.aurora-preview&ssr=false#review-details)
+[![CI](https://github.com/Abhishekkumar2021/aurora-preview/actions/workflows/ci.yml/badge.svg)](https://github.com/Abhishekkumar2021/aurora-preview/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-4cd7b0.svg)](LICENSE)
+
 A gorgeous, **native-feeling** Markdown preview for VS Code. Aurora inherits your
 editor's theme, fonts, and accent color, then adds refined typography — with
 zero-setup Mermaid diagrams, KaTeX math, syntax highlighting, and export to
@@ -7,6 +13,15 @@ HTML/PDF.
 
 > Open a Markdown file and run **Aurora: Open Preview to the Side** (`Ctrl/Cmd+K Shift+V`),
 > or click the preview icon in the editor title bar.
+
+## Install
+
+- **In VS Code:** open Extensions (`Ctrl/Cmd+Shift+X`), search **“Aurora Preview”**, and click Install.
+- **From the Marketplace:** [marketplace.visualstudio.com/items?itemName=abhishekkumar2021.aurora-preview](https://marketplace.visualstudio.com/items?itemName=abhishekkumar2021.aurora-preview)
+- **From the command line:**
+  ```bash
+  code --install-extension abhishekkumar2021.aurora-preview
+  ```
 
 <!-- Add demo GIFs/screenshots here before publishing:
 ![Preview](images/preview.png)

@@ -6,7 +6,8 @@ suite('Aurora Preview', () => {
   test('command is registered', async () => {
     // The manifest declares no auto-activation events, so activate the
     // extension explicitly before asserting its command is registered.
-    const ext = vscode.extensions.getExtension('abhishek.aurora-preview');
+    // Find it by manifest name so this doesn't break when the publisher changes.
+    const ext = vscode.extensions.all.find((e) => e.packageJSON?.name === 'aurora-preview');
     assert.ok(ext, 'aurora-preview extension should be present');
     await ext!.activate();
 
