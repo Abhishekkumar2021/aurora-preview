@@ -1,0 +1,50 @@
+name: Release
+
+# Publish when a version tag is pushed, e.g. `git tag v0.1.0 && git push origin v0.1.0`.
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write # create the GitHub Release
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Unit tests
+        run: npm run test:unit
+
+      - name: Build (webview + host)
+        run: npm run build
+
+      - name: Package VSIX
+        run: npx vsce package -o aurora-preview.vsix
+
+      - name: Publish to VS Code Marketplace
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+        run: npx vsce publish --packagePath aurora-preview.vsix --pat "$VSCE_PAT"
+
+      - name: Publish to Open VSX
+        continue-on-error: true
+        env:
+          OVSX_PAT: ${{ secrets.OVSX_PAT }}
+        run: npx ovsx publish aurora-preview.vsix --pat "$OVSX_PAT"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: aurora-preview.vsix
+          generate_release_notes: true

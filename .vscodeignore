@@ -14,6 +14,7 @@ vitest.config.ts
 .superpowers/**
 docs/**
 icon.svg
+.github/**
 .gitignore
 .gitattributes
 media/webview/**
