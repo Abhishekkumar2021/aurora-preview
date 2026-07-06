@@ -4,6 +4,7 @@ import taskLists from 'markdown-it-task-lists';
 import footnote from 'markdown-it-footnote';
 import attrs from 'markdown-it-attrs';
 import texmath from 'markdown-it-texmath';
+import frontMatter from 'markdown-it-front-matter';
 import katex from 'katex';
 import hljs from 'highlight.js';
 
@@ -61,6 +62,8 @@ function installFenceRenderer(md: MarkdownIt): void {
 
 export function createRenderer(): MarkdownRenderer {
   const md = new MarkdownIt({ html: true, linkify: true, typographer: true, breaks: false });
+  // Consume leading YAML frontmatter so it isn't rendered as body text.
+  md.use(frontMatter, () => {});
   md.use(anchor, { slugify: (s: string) => s.trim().toLowerCase().replace(/[^\w]+/g, '-') });
   md.use(taskLists, { enabled: true });
   md.use(footnote);
