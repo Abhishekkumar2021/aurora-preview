@@ -1,9 +1,15 @@
 import * as vscode from 'vscode';
+import { PreviewPanel } from './preview/panel';
 
 export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.commands.registerCommand('auroraPreview.open', () => {
-      vscode.window.showInformationMessage('Aurora Preview: coming online…');
+      const editor = vscode.window.activeTextEditor;
+      if (!editor || editor.document.languageId !== 'markdown') {
+        vscode.window.showInformationMessage('Aurora Preview: open a Markdown file first.');
+        return;
+      }
+      PreviewPanel.createOrShow(context, editor);
     })
   );
 }

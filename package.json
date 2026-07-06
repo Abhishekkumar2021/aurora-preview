@@ -64,7 +64,7 @@
     "build:webview": "vite build",
     "build": "npm run build:webview && npm run compile",
     "test:unit": "vitest run",
-    "pretest:integration": "tsc -p tsconfig.json --outDir dist-test",
+    "pretest:integration": "tsc -p tsconfig.integration.json --outDir dist-test",
     "test:integration": "vscode-test",
     "vscode:prepublish": "npm run build"
   },
