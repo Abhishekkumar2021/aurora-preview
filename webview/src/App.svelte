@@ -281,7 +281,7 @@
   async function applyMessage(data: unknown) {
     if (!isHostToWebview(data)) return;
     if (data.type === 'render') {
-      html = DOMPurify.sanitize(data.html);
+      html = DOMPurify.sanitize(data.html, { FORBID_TAGS: ['style'] });
       await tick();
       enhanceCode();
       await renderMermaid();

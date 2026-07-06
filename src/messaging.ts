@@ -47,7 +47,13 @@ export function isWebviewToHost(msg: unknown): msg is WebviewToHost {
   if (m.type === 'ready') return true;
   if (m.type === 'revealLine') return typeof m.line === 'number';
   if (m.type === 'exportHtml') {
-    return typeof m.title === 'string' && typeof m.docHtml === 'string' && typeof m.vars === 'object' && m.vars !== null;
+    return (
+      typeof m.title === 'string' &&
+      typeof m.docHtml === 'string' &&
+      typeof m.vars === 'object' && m.vars !== null &&
+      typeof m.theme === 'string' &&
+      typeof m.scheme === 'string'
+    );
   }
   return false;
 }

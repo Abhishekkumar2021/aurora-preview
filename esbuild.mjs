@@ -9,7 +9,8 @@ const ctx = await esbuild.context({
   target: 'node18',
   outfile: 'dist/extension.js',
   external: ['vscode'],
-  sourcemap: true,
+  sourcemap: !watch,
+  minify: !watch,
   logLevel: 'info',
 });
 

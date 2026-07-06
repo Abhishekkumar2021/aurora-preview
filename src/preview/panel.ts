@@ -31,11 +31,6 @@ export class PreviewPanel {
   private disposables: vscode.Disposable[] = [];
   private debounce: NodeJS.Timeout | undefined;
 
-  /** Webview readiness handshake: buffer the latest messages until it signals ready. */
-  private ready = false;
-  private pendingRender: HostToWebview | undefined;
-  private pendingConfig: HostToWebview | undefined;
-
   /** Scroll-sync loop guard (timestamp in ms). */
   private lockEditorScrollUntil = 0;
 
@@ -49,6 +44,12 @@ export class PreviewPanel {
       PreviewPanel.current.panel.reveal(vscode.ViewColumn.Beside, true);
       return PreviewPanel.current;
     }
+    const docDir = editor.document.uri.with({ path: editor.document.uri.path.replace(/\/[^/]*$/, '') });
+    const roots = [
+      vscode.Uri.joinPath(context.extensionUri, 'media'),
+      docDir,
+      ...(vscode.workspace.workspaceFolders?.map((f) => f.uri) ?? []),
+    ];
     const panel = vscode.window.createWebviewPanel(
       'auroraPreview',
       'Aurora Preview',
@@ -56,7 +57,7 @@ export class PreviewPanel {
       {
         enableScripts: true,
         retainContextWhenHidden: true,
-        localResourceRoots: [vscode.Uri.joinPath(context.extensionUri, 'media')],
+        localResourceRoots: roots,
       }
     );
     PreviewPanel.current = new PreviewPanel(panel, context, editor.document);
@@ -100,9 +101,9 @@ export class PreviewPanel {
   private onWebviewMessage(msg: unknown) {
     if (!isWebviewToHost(msg)) return;
     if (msg.type === 'ready') {
-      this.ready = true;
-      if (this.pendingConfig) { void this.panel.webview.postMessage(this.pendingConfig); this.pendingConfig = undefined; }
-      if (this.pendingRender) { void this.panel.webview.postMessage(this.pendingRender); this.pendingRender = undefined; }
+      // Idempotent: re-send current state on every ready (initial load AND webview reloads/moves).
+      this.postConfig();
+      this.render();
     } else if (msg.type === 'revealLine') {
       this.syncPreviewToEditor(msg.line);
     } else if (msg.type === 'exportHtml') {
@@ -152,22 +153,32 @@ export class PreviewPanel {
     this.debounce = setTimeout(() => this.render(), 120);
   }
 
-  /** Post a message, or buffer the latest until the webview is ready. */
   private post(msg: HostToWebview) {
-    if (this.ready) {
-      void this.panel.webview.postMessage(msg);
-    } else if (msg.type === 'render') {
-      this.pendingRender = msg;
-    } else if (msg.type === 'setConfig') {
-      this.pendingConfig = msg;
-    }
+    void this.panel.webview.postMessage(msg);
   }
 
   private postConfig() { this.post({ type: 'setConfig', config: readConfig() }); }
 
   private render() {
     const source = this.doc.getText();
-    this.post({ type: 'render', html: this.renderer.render(source), source });
+    const html = this.rewriteLocalImages(this.renderer.render(source));
+    this.post({ type: 'render', html, source });
+  }
+
+  /** Rewrite local <img> sources to webview URIs so workspace-relative images resolve. */
+  private rewriteLocalImages(html: string): string {
+    const dir = this.doc.uri.with({ path: this.doc.uri.path.replace(/\/[^/]*$/, '') });
+    return html.replace(/(<img\b[^>]*?\bsrc=")([^"]+)(")/gi, (whole, pre, src, post) => {
+      if (/^(https?:|data:|vscode-webview-resource:|vscode-resource:|#)/i.test(src)) return whole;
+      try {
+        const resolved = /^\//.test(src)
+          ? this.doc.uri.with({ path: src })
+          : vscode.Uri.joinPath(dir, src);
+        return `${pre}${this.panel.webview.asWebviewUri(resolved)}${post}`;
+      } catch {
+        return whole;
+      }
+    });
   }
 
   /** Editor scrolled → tell the preview which source line is at the top. */
