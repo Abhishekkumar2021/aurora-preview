@@ -1,8 +1,8 @@
 # Aurora Preview — Markdown Preview, PDF Export & Mermaid
 
-[![Version](https://img.shields.io/visual-studio-marketplace/v/abhishekkumar2021.aurora-preview?label=Marketplace&color=4cd7b0)](https://marketplace.visualstudio.com/items?itemName=abhishekkumar2021.aurora-preview)
-[![Installs](https://img.shields.io/visual-studio-marketplace/i/abhishekkumar2021.aurora-preview?color=4cd7b0)](https://marketplace.visualstudio.com/items?itemName=abhishekkumar2021.aurora-preview)
-[![Rating](https://img.shields.io/visual-studio-marketplace/r/abhishekkumar2021.aurora-preview?color=4cd7b0)](https://marketplace.visualstudio.com/items?itemName=abhishekkumar2021.aurora-preview&ssr=false#review-details)
+[![Version](https://vsmarketplacebadges.dev/version-short/abhishekkumar2021.aurora-preview.svg)](https://marketplace.visualstudio.com/items?itemName=abhishekkumar2021.aurora-preview)
+[![Installs](https://vsmarketplacebadges.dev/installs-short/abhishekkumar2021.aurora-preview.svg)](https://marketplace.visualstudio.com/items?itemName=abhishekkumar2021.aurora-preview)
+[![Rating](https://vsmarketplacebadges.dev/rating-short/abhishekkumar2021.aurora-preview.svg)](https://marketplace.visualstudio.com/items?itemName=abhishekkumar2021.aurora-preview&ssr=false#review-details)
 [![CI](https://github.com/Abhishekkumar2021/aurora-preview/actions/workflows/ci.yml/badge.svg)](https://github.com/Abhishekkumar2021/aurora-preview/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-4cd7b0.svg)](LICENSE)
 
