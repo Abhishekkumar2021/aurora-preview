@@ -2,9 +2,14 @@
   "name": "aurora-preview",
   "displayName": "Aurora Preview — Markdown Preview, PDF Export & Mermaid",
   "description": "A gorgeous, terminal-glass Markdown preview for VS Code with live rendering, Mermaid & KaTeX, deep theming, and PDF/HTML export.",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "publisher": "abhishek",
   "license": "MIT",
+  "icon": "icon.png",
+  "repository": { "type": "git", "url": "https://github.com/Abhishekkumar2021/aurora-preview.git" },
+  "bugs": { "url": "https://github.com/Abhishekkumar2021/aurora-preview/issues" },
+  "homepage": "https://github.com/Abhishekkumar2021/aurora-preview#readme",
+  "galleryBanner": { "color": "#0b0b11", "theme": "dark" },
   "engines": {
     "vscode": "^1.90.0",
     "node": ">=18"
