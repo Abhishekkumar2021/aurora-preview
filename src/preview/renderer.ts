@@ -60,10 +60,37 @@ function installFenceRenderer(md: MarkdownIt): void {
   };
 }
 
+/** Render leading YAML frontmatter as a subtle metadata card (title + fields). */
+function renderFrontmatterCard(raw: string, escape: (s: string) => string): string {
+  if (!raw || !raw.trim()) return '';
+  let title = '';
+  const fields: Array<[string, string]> = [];
+  for (const line of raw.split(/\r?\n/)) {
+    const m = /^([A-Za-z0-9_-]+)\s*:\s*(.*)$/.exec(line.trim());
+    if (!m) continue;
+    const val = m[2].trim().replace(/^["']|["']$/g, '');
+    if (!val) continue;
+    if (m[1].toLowerCase() === 'title') title = val;
+    else fields.push([m[1], val]);
+  }
+  if (!title && fields.length === 0) return '';
+  let html = '<div class="frontmatter" data-line="0">';
+  if (title) html += `<div class="fm-title">${escape(title)}</div>`;
+  if (fields.length) {
+    html += '<div class="fm-meta">';
+    for (const [k, v] of fields) {
+      html += `<span class="fm-field"><span class="fm-key">${escape(k)}</span>${escape(v)}</span>`;
+    }
+    html += '</div>';
+  }
+  return html + '</div>\n';
+}
+
 export function createRenderer(): MarkdownRenderer {
   const md = new MarkdownIt({ html: true, linkify: true, typographer: true, breaks: false });
-  // Consume leading YAML frontmatter so it isn't rendered as body text.
-  md.use(frontMatter, () => {});
+  // Capture leading YAML frontmatter so it renders as a card, not body text.
+  let frontmatterRaw = '';
+  md.use(frontMatter, (fm: string) => { frontmatterRaw = fm; });
   md.use(anchor, { slugify: (s: string) => s.trim().toLowerCase().replace(/[^\w]+/g, '-') });
   md.use(taskLists, { enabled: true });
   md.use(footnote);
@@ -75,5 +102,11 @@ export function createRenderer(): MarkdownRenderer {
   });
   injectLineNumbers(md);
   installFenceRenderer(md);
-  return { render: (markdown: string) => md.render(markdown) };
+  return {
+    render: (markdown: string) => {
+      frontmatterRaw = '';
+      const body = md.render(markdown);
+      return renderFrontmatterCard(frontmatterRaw, md.utils.escapeHtml) + body;
+    },
+  };
 }

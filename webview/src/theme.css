@@ -62,6 +62,20 @@ body {
 
 .doc > :first-child { margin-top: 0; }
 
+/* Frontmatter metadata card. */
+.doc .frontmatter {
+  margin: 0 0 2em;
+  padding: 15px 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--fg) 3%, transparent);
+}
+.doc .fm-title { font-size: 1.5em; font-weight: 680; letter-spacing: -0.015em; line-height: 1.25; }
+.doc .fm-meta { display: flex; flex-wrap: wrap; gap: 7px 16px; margin-top: 10px; font-size: 0.85em; color: var(--muted); }
+.doc .fm-field { display: inline-flex; gap: 6px; }
+.doc .fm-key { color: color-mix(in srgb, var(--fg) 45%, transparent); text-transform: capitalize; }
+.doc .fm-key::after { content: ""; }
+
 /* ---- headings ------------------------------------------------------------ */
 .doc h1, .doc h2, .doc h3, .doc h4, .doc h5, .doc h6 {
   font-weight: 650;
