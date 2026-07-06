@@ -3,7 +3,7 @@
   "displayName": "Aurora Preview — Markdown Preview, PDF Export & Mermaid",
   "description": "A gorgeous, terminal-glass Markdown preview for VS Code with live rendering, Mermaid & KaTeX, deep theming, and PDF/HTML export.",
   "version": "0.1.0",
-  "publisher": "abhishek",
+  "publisher": "abhishekkumar2021",
   "license": "MIT",
   "icon": "icon.png",
   "repository": {
