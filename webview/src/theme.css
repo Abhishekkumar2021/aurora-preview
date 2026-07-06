@@ -219,6 +219,7 @@ body {
 
 /* ---- media --------------------------------------------------------------- */
 .doc img { max-width: 100%; border-radius: var(--radius); cursor: zoom-in; }
+.doc pre.mermaid { cursor: zoom-in; }
 
 /* Full-screen image viewer. */
 .lightbox {
@@ -234,13 +235,35 @@ body {
   cursor: zoom-out;
 }
 .lightbox.open { display: flex; animation: lb-in 0.18s var(--ease); }
-.lightbox img {
-  max-width: 100%;
-  max-height: 100%;
-  border-radius: var(--radius);
-  box-shadow: 0 24px 70px -12px rgba(0, 0, 0, 0.7);
+.lightbox-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 92vw;
+  max-height: 92vh;
   cursor: default;
   animation: lb-zoom 0.2s var(--ease);
+}
+.lightbox-content img {
+  display: block;
+  max-width: 92vw;
+  max-height: 92vh;
+  border-radius: var(--radius);
+  box-shadow: 0 24px 70px -12px rgba(0, 0, 0, 0.7);
+}
+.lightbox-content.diagram {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  overflow: auto;
+  box-shadow: 0 24px 70px -12px rgba(0, 0, 0, 0.7);
+}
+.lightbox-content.diagram svg {
+  width: min(84vw, 1400px) !important;
+  max-width: none !important;
+  height: auto !important;
+  max-height: 84vh !important;
 }
 .lightbox-close {
   position: fixed;

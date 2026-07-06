@@ -82,31 +82,43 @@
     }
   }
 
-  // Full-screen image viewer (lightbox).
+  // Full-screen viewer (lightbox) for images and diagrams.
   let lightbox: HTMLDivElement | null = null;
+  let lightboxContent: HTMLDivElement | null = null;
   function ensureLightbox(): HTMLDivElement {
     if (lightbox) return lightbox;
     const lb = document.createElement('div');
     lb.className = 'lightbox';
-    const img = document.createElement('img');
-    img.alt = '';
+    const content = document.createElement('div');
+    content.className = 'lightbox-content';
+    content.addEventListener('click', (e) => e.stopPropagation());
     const close = document.createElement('button');
     close.type = 'button';
     close.className = 'icon-btn lightbox-close';
     close.setAttribute('aria-label', 'Close');
     close.innerHTML = ICON_CLOSE;
-    lb.append(img, close);
+    close.addEventListener('click', () => closeLightbox());
+    lb.append(content, close);
     lb.addEventListener('click', () => closeLightbox());
     document.body.appendChild(lb);
     lightbox = lb;
+    lightboxContent = content;
     return lb;
   }
-  function openLightbox(src: string, alt: string) {
-    const lb = ensureLightbox();
-    const img = lb.querySelector('img')!;
+  function openImage(src: string, alt: string) {
+    ensureLightbox();
+    lightboxContent!.className = 'lightbox-content';
+    const img = document.createElement('img');
     img.src = src;
     img.alt = alt;
-    lb.classList.add('open');
+    lightboxContent!.replaceChildren(img);
+    lightbox!.classList.add('open');
+  }
+  function openDiagram(svg: SVGElement) {
+    ensureLightbox();
+    lightboxContent!.className = 'lightbox-content diagram';
+    lightboxContent!.replaceChildren(svg);
+    lightbox!.classList.add('open');
   }
   function closeLightbox() {
     lightbox?.classList.remove('open');
@@ -186,11 +198,19 @@
     };
     window.addEventListener('scroll', onScroll, { passive: true });
 
-    // Click a content image to open it full-screen.
+    // Click a content image or diagram to open it full-screen.
     const onClick = (e: MouseEvent) => {
-      const t = e.target as HTMLElement;
-      if (t?.tagName === 'IMG' && t.closest('.doc')) {
-        openLightbox((t as HTMLImageElement).currentSrc || (t as HTMLImageElement).src, t.getAttribute('alt') ?? '');
+      const t = e.target as HTMLElement | null;
+      if (!t) return;
+      const img = t.closest?.('.doc img') as HTMLImageElement | null;
+      if (img) {
+        openImage(img.currentSrc || img.src, img.getAttribute('alt') ?? '');
+        return;
+      }
+      const diagram = t.closest?.('.doc .mermaid') as HTMLElement | null;
+      if (diagram) {
+        const svg = diagram.querySelector('svg');
+        if (svg) openDiagram(svg.cloneNode(true) as SVGElement);
       }
     };
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') closeLightbox(); };
