@@ -14,4 +14,8 @@ vitest.config.ts
 .superpowers/**
 docs/**
 icon.svg
+.gitignore
+.gitattributes
+media/webview/**
+*.vsix
 **/.DS_Store

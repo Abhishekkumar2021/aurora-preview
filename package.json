@@ -6,10 +6,18 @@
   "publisher": "abhishek",
   "license": "MIT",
   "icon": "icon.png",
-  "repository": { "type": "git", "url": "https://github.com/Abhishekkumar2021/aurora-preview.git" },
-  "bugs": { "url": "https://github.com/Abhishekkumar2021/aurora-preview/issues" },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Abhishekkumar2021/aurora-preview.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Abhishekkumar2021/aurora-preview/issues"
+  },
   "homepage": "https://github.com/Abhishekkumar2021/aurora-preview#readme",
-  "galleryBanner": { "color": "#0b0b11", "theme": "dark" },
+  "galleryBanner": {
+    "color": "#0b0b11",
+    "theme": "dark"
+  },
   "engines": {
     "vscode": "^1.90.0",
     "node": ">=18"
@@ -154,9 +162,10 @@
     "@types/markdown-it": "^14.1.2",
     "@types/mocha": "^10.0.10",
     "@types/node": "^26.1.0",
-    "@types/vscode": "^1.125.0",
+    "@types/vscode": "1.90.0",
     "@vscode/test-cli": "^0.0.15",
     "@vscode/test-electron": "^3.0.0",
+    "@vscode/vsce": "^3.9.2",
     "esbuild": "^0.28.1",
     "jsdom": "^29.1.1",
     "mocha": "^11.7.6",
