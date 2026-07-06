@@ -255,6 +255,15 @@ body {
 /* ---- media --------------------------------------------------------------- */
 .doc img { max-width: 100%; border-radius: var(--radius); cursor: zoom-in; }
 .doc pre.mermaid { cursor: zoom-in; }
+/* Mermaid renders HTML labels; stop document typography from leaking into them. */
+.doc .mermaid p { margin: 0; padding: 0; }
+.doc .mermaid .nodeLabel, .doc .mermaid .edgeLabel, .doc .mermaid .label, .doc .mermaid span {
+  line-height: 1.4;
+}
+.doc .mermaid .edgeLabel, .doc .mermaid .edgeLabel p {
+  background: var(--bg);
+  color: var(--fg);
+}
 
 /* Full-screen image viewer. */
 .lightbox {
