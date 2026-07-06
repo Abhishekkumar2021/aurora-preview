@@ -1,0 +1,177 @@
+{
+  "name": "aurora-preview",
+  "displayName": "Aurora Preview — Markdown Preview, PDF Export & Mermaid",
+  "description": "A gorgeous, terminal-glass Markdown preview for VS Code with live rendering, Mermaid & KaTeX, deep theming, and PDF/HTML export.",
+  "version": "0.1.0",
+  "publisher": "abhishek",
+  "license": "MIT",
+  "icon": "icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Abhishekkumar2021/aurora-preview.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Abhishekkumar2021/aurora-preview/issues"
+  },
+  "homepage": "https://github.com/Abhishekkumar2021/aurora-preview#readme",
+  "galleryBanner": {
+    "color": "#0b0b11",
+    "theme": "dark"
+  },
+  "engines": {
+    "vscode": "^1.90.0",
+    "node": ">=18"
+  },
+  "categories": [
+    "Visualization",
+    "Formatters",
+    "Other"
+  ],
+  "keywords": [
+    "markdown",
+    "markdown preview",
+    "preview",
+    "pdf",
+    "export",
+    "html",
+    "mermaid",
+    "katex",
+    "math",
+    "diagram",
+    "toc",
+    "viewer",
+    "md",
+    "presentation"
+  ],
+  "main": "./dist/extension.js",
+  "activationEvents": [],
+  "contributes": {
+    "commands": [
+      {
+        "command": "auroraPreview.open",
+        "title": "Open Preview to the Side",
+        "category": "Aurora",
+        "icon": "$(open-preview)"
+      },
+      {
+        "command": "auroraPreview.exportHtml",
+        "title": "Export to HTML",
+        "category": "Aurora"
+      },
+      {
+        "command": "auroraPreview.exportPdf",
+        "title": "Export to PDF (Print)",
+        "category": "Aurora"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "auroraPreview.open",
+          "when": "editorLangId == markdown",
+          "group": "navigation"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "auroraPreview.open",
+        "key": "ctrl+k shift+v",
+        "mac": "cmd+k shift+v",
+        "when": "editorLangId == markdown"
+      }
+    ],
+    "configuration": {
+      "title": "Aurora Preview",
+      "properties": {
+        "auroraPreview.theme": {
+          "type": "string",
+          "enum": [
+            "auto",
+            "terminal-glass",
+            "sepia"
+          ],
+          "enumDescriptions": [
+            "Match the current VS Code theme (background, foreground, fonts, link color).",
+            "Dark glassy identity: squared corners, mono headings, accent glow.",
+            "Warm, low-glare reading theme."
+          ],
+          "default": "auto",
+          "description": "Preview theme. 'auto' blends with your VS Code theme."
+        },
+        "auroraPreview.accent": {
+          "type": "string",
+          "default": "",
+          "description": "Accent color (any CSS color). Empty uses your theme's link color."
+        },
+        "auroraPreview.fontFamily": {
+          "type": "string",
+          "default": "",
+          "description": "Reading font family. Empty uses the VS Code UI font."
+        },
+        "auroraPreview.codeFontFamily": {
+          "type": "string",
+          "default": "",
+          "description": "Code font family. Empty uses the VS Code editor font."
+        },
+        "auroraPreview.fontSize": {
+          "type": "number",
+          "default": 0,
+          "description": "Reading font size in pixels. 0 uses the default (15)."
+        },
+        "auroraPreview.lineHeight": {
+          "type": "number",
+          "default": 0,
+          "description": "Line height (unitless). 0 uses the default (1.7)."
+        },
+        "auroraPreview.contentWidth": {
+          "type": "number",
+          "default": 860,
+          "description": "Maximum reading column width in pixels."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "node esbuild.mjs",
+    "watch": "node esbuild.mjs --watch",
+    "build:webview": "vite build",
+    "build": "npm run build:webview && npm run compile",
+    "test:unit": "vitest run",
+    "pretest:integration": "tsc -p tsconfig.integration.json --outDir dist-test",
+    "test:integration": "vscode-test",
+    "vscode:prepublish": "npm run build"
+  },
+  "dependencies": {
+    "dompurify": "^3.4.11",
+    "highlight.js": "^11.11.1",
+    "katex": "^0.17.0",
+    "markdown-it": "^14.3.0",
+    "markdown-it-anchor": "^9.2.0",
+    "markdown-it-attrs": "^5.0.0",
+    "markdown-it-footnote": "^4.0.0",
+    "markdown-it-front-matter": "^0.2.4",
+    "markdown-it-github-alerts": "^1.0.1",
+    "markdown-it-task-lists": "^2.1.1",
+    "markdown-it-texmath": "^1.0.0",
+    "mermaid": "^11.16.0"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^7.1.2",
+    "@testing-library/svelte": "^5.4.2",
+    "@types/markdown-it": "^14.1.2",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^26.1.0",
+    "@types/vscode": "1.90.0",
+    "@vscode/test-cli": "^0.0.15",
+    "@vscode/test-electron": "^3.0.0",
+    "@vscode/vsce": "^3.9.2",
+    "esbuild": "^0.28.1",
+    "jsdom": "^29.1.1",
+    "mocha": "^11.7.6",
+    "svelte": "^5.56.4",
+    "typescript": "^5.9.3",
+    "vite": "^8.1.3",
+    "vitest": "^4.1.10"
+  }
+}
