@@ -1,0 +1,12 @@
+.vscode/**
+webview/**
+src/**
+test/**
+node_modules/**
+**/*.map
+**/tsconfig*.json
+esbuild.mjs
+vite.config.ts
+vitest.config.ts
+.superpowers/**
+docs/**
