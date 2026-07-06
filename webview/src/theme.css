@@ -216,13 +216,15 @@ body {
 .doc .task-list-item-checkbox {
   appearance: none;
   -webkit-appearance: none;
-  width: 1.1em;
-  height: 1.1em;
-  margin: 0 0.55em 0 -1.6em;
-  vertical-align: -0.18em;
+  box-sizing: border-box;
+  width: 16px;
+  height: 16px;
+  margin: 0 0.5em 0 -1.7em;
+  vertical-align: -3px;
   position: relative;
+  flex-shrink: 0;
   border: 1.5px solid color-mix(in srgb, var(--fg) 36%, transparent);
-  border-radius: 5px;
+  border-radius: 4px;
   background: color-mix(in srgb, var(--fg) 4%, transparent);
   transition: background 0.15s var(--ease), border-color 0.15s var(--ease);
 }
@@ -233,13 +235,13 @@ body {
 .doc .task-list-item-checkbox:checked::after {
   content: "";
   position: absolute;
-  left: 0.34em;
-  top: 0.13em;
-  width: 0.28em;
-  height: 0.56em;
+  left: 50%;
+  top: 46%;
+  width: 4px;
+  height: 8px;
   border: solid #fff;
   border-width: 0 2px 2px 0;
-  transform: rotate(45deg);
+  transform: translate(-50%, -50%) rotate(45deg);
 }
 
 /* ---- tables -------------------------------------------------------------- */
@@ -378,37 +380,31 @@ body {
    a light override applies when VS Code is light (unless terminal-glass, which
    stays dark). Colors track VS Code's Dark+/Light+ token themes.
 =========================================================================== */
-.doc .hljs-comment, .doc .hljs-quote { color: #6a9955; font-style: italic; }
-.doc .hljs-keyword, .doc .hljs-literal, .doc .hljs-selector-tag, .doc .hljs-built_in { color: #569cd6; }
-.doc .hljs-string, .doc .hljs-regexp, .doc .hljs-meta .hljs-string { color: #ce9178; }
-.doc .hljs-number, .doc .hljs-bullet { color: #b5cea8; }
-.doc .hljs-title, .doc .hljs-title.function_, .doc .hljs-section, .doc .hljs-meta { color: #dcdcaa; }
-.doc .hljs-type, .doc .hljs-class .hljs-title, .doc .hljs-title.class_ { color: #4ec9b0; }
-.doc .hljs-variable, .doc .hljs-attr, .doc .hljs-attribute, .doc .hljs-template-variable { color: #9cdcfe; }
-.doc .hljs-symbol, .doc .hljs-link { color: #d7ba7d; }
-.doc .hljs-deletion { color: #f14c4c; }
-.doc .hljs-addition { color: #6a9955; }
+/* Token colors as variables: dark by default; light values apply for a light
+   VS Code theme AND for the sepia theme (which has a light background). */
+:root {
+  --hl-comment: #6a9955; --hl-keyword: #569cd6; --hl-string: #ce9178; --hl-number: #b5cea8;
+  --hl-func: #dcdcaa; --hl-type: #4ec9b0; --hl-var: #9cdcfe; --hl-symbol: #d7ba7d;
+  --hl-add: #6a9955; --hl-del: #f14c4c;
+}
+:root[data-scheme="light"]:not([data-theme="terminal-glass"]),
+:root[data-theme="sepia"] {
+  --hl-comment: #6a8759; --hl-keyword: #0033b3; --hl-string: #a31515; --hl-number: #098658;
+  --hl-func: #795e26; --hl-type: #267f99; --hl-var: #001080; --hl-symbol: #b5651d;
+  --hl-add: #22863a; --hl-del: #b31d28;
+}
+.doc .hljs-comment, .doc .hljs-quote { color: var(--hl-comment); font-style: italic; }
+.doc .hljs-keyword, .doc .hljs-literal, .doc .hljs-selector-tag, .doc .hljs-built_in { color: var(--hl-keyword); }
+.doc .hljs-string, .doc .hljs-regexp, .doc .hljs-meta .hljs-string { color: var(--hl-string); }
+.doc .hljs-number, .doc .hljs-bullet { color: var(--hl-number); }
+.doc .hljs-title, .doc .hljs-title.function_, .doc .hljs-section, .doc .hljs-meta { color: var(--hl-func); }
+.doc .hljs-type, .doc .hljs-class .hljs-title, .doc .hljs-title.class_ { color: var(--hl-type); }
+.doc .hljs-variable, .doc .hljs-attr, .doc .hljs-attribute, .doc .hljs-template-variable { color: var(--hl-var); }
+.doc .hljs-symbol, .doc .hljs-link { color: var(--hl-symbol); }
+.doc .hljs-deletion { color: var(--hl-del); }
+.doc .hljs-addition { color: var(--hl-add); }
 .doc .hljs-emphasis { font-style: italic; }
 .doc .hljs-strong { font-weight: 700; }
-
-:root[data-scheme="light"]:not([data-theme="terminal-glass"]) .doc .hljs-comment,
-:root[data-scheme="light"]:not([data-theme="terminal-glass"]) .doc .hljs-quote { color: #008000; }
-:root[data-scheme="light"]:not([data-theme="terminal-glass"]) .doc .hljs-keyword,
-:root[data-scheme="light"]:not([data-theme="terminal-glass"]) .doc .hljs-literal,
-:root[data-scheme="light"]:not([data-theme="terminal-glass"]) .doc .hljs-selector-tag,
-:root[data-scheme="light"]:not([data-theme="terminal-glass"]) .doc .hljs-built_in { color: #0000ff; }
-:root[data-scheme="light"]:not([data-theme="terminal-glass"]) .doc .hljs-string,
-:root[data-scheme="light"]:not([data-theme="terminal-glass"]) .doc .hljs-regexp { color: #a31515; }
-:root[data-scheme="light"]:not([data-theme="terminal-glass"]) .doc .hljs-number,
-:root[data-scheme="light"]:not([data-theme="terminal-glass"]) .doc .hljs-bullet { color: #098658; }
-:root[data-scheme="light"]:not([data-theme="terminal-glass"]) .doc .hljs-title,
-:root[data-scheme="light"]:not([data-theme="terminal-glass"]) .doc .hljs-title.function_,
-:root[data-scheme="light"]:not([data-theme="terminal-glass"]) .doc .hljs-meta { color: #795e26; }
-:root[data-scheme="light"]:not([data-theme="terminal-glass"]) .doc .hljs-type,
-:root[data-scheme="light"]:not([data-theme="terminal-glass"]) .doc .hljs-title.class_ { color: #267f99; }
-:root[data-scheme="light"]:not([data-theme="terminal-glass"]) .doc .hljs-variable,
-:root[data-scheme="light"]:not([data-theme="terminal-glass"]) .doc .hljs-attr,
-:root[data-scheme="light"]:not([data-theme="terminal-glass"]) .doc .hljs-attribute { color: #001080; }
 
 @media (prefers-reduced-motion: reduce) {
   .doc { animation: none; }
