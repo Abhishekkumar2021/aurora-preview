@@ -12,6 +12,9 @@ permissions:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    env:
+      VSCE_PAT: ${{ secrets.VSCE_PAT }}
+      OVSX_PAT: ${{ secrets.OVSX_PAT }}
     steps:
       - uses: actions/checkout@v4
 
@@ -33,14 +36,12 @@ jobs:
         run: npx vsce package -o aurora-preview.vsix
 
       - name: Publish to VS Code Marketplace
-        env:
-          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+        if: ${{ env.VSCE_PAT != '' }}
         run: npx vsce publish --packagePath aurora-preview.vsix --pat "$VSCE_PAT"
 
       - name: Publish to Open VSX
+        if: ${{ env.OVSX_PAT != '' }}
         continue-on-error: true
-        env:
-          OVSX_PAT: ${{ secrets.OVSX_PAT }}
         run: npx ovsx publish aurora-preview.vsix --pat "$OVSX_PAT"
 
       - name: Create GitHub Release
